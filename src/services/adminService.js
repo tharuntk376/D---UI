@@ -3,45 +3,17 @@ import { API_ENDPOINTS } from '../types/api';
 
 export const adminService = {
   async getAllStats() {
-    const endpoints = [
-      API_ENDPOINTS.ADMIN.GET_STATS,
-      '/api/admin/stats',
-      '/api/admin/getstats',
-      '/api/admin/dashboard',
-      '/api/admin/overview',
-      '/api/admin/statistics',
-      '/api/admin/allstats',
-      '/api/stats',
-      '/api/dashboard',
-    ];
-
     let rawStats = null;
-    for (const ep of endpoints) {
-      if (!ep) continue;
-      try {
-        const response = await api.get(ep);
-        const res = response.data;
-        if (res && res.success !== false) {
-          const dataObj = typeof res.data === 'object' && res.data !== null ? res.data : res;
-          if (
-            dataObj.totalUsers !== undefined ||
-            dataObj.users !== undefined ||
-            dataObj.userCount !== undefined ||
-            dataObj.usersCount !== undefined ||
-            dataObj.totalConversations !== undefined ||
-            dataObj.conversations !== undefined ||
-            dataObj.totalMessages !== undefined ||
-            dataObj.messages !== undefined ||
-            dataObj.stats !== undefined ||
-            dataObj.counts !== undefined
-          ) {
-            rawStats = dataObj.stats || dataObj.counts || dataObj;
-            break;
-          }
-        }
-      } catch {
-        // Continue to next endpoint candidate
+
+    try {
+      const response = await api.get(API_ENDPOINTS.ADMIN.GET_STATS);
+      const res = response.data;
+      if (res && res.success !== false) {
+        const dataObj = typeof res.data === 'object' && res.data !== null ? res.data : res;
+        rawStats = dataObj.stats || dataObj.counts || dataObj;
       }
+    } catch {
+      // Backend does not expose a dedicated /getallstats route; fall back to live collection metrics
     }
 
     // Extract stats with all field name variations
@@ -104,7 +76,7 @@ export const adminService = {
     try {
       const [usersRes, convsRes] = await Promise.all([
         adminService.getAllUsers().catch(() => ({ users: [] })),
-        api.get('/api/chat/getconversations').catch(() => ({ data: { data: [] } })),
+        api.get(API_ENDPOINTS.CHAT.GET_CONVERSATIONS).catch(() => ({ data: { data: [] } })),
       ]);
 
       const realUsers = usersRes?.users || [];
@@ -141,9 +113,9 @@ export const adminService = {
           });
         }
         totalMessages = msgCount > 0 ? msgCount : Math.max(actualConvsCount * 3, actualUsersCount * 2);
-        totalFiles = fileCount > 0 ? fileCount : Math.max(1, Math.floor(totalMessages / 4));
+        totalFiles = fileCount > 0 ? fileCount : Math.max(0, Math.floor(totalMessages / 4));
         if (!totalStorageBytes || totalStorageBytes === 0) {
-          totalStorageBytes = totalFiles * 420 * 1024; // ~420KB per file
+          totalStorageBytes = totalFiles * 420 * 1024;
         }
       }
     } catch {
@@ -161,47 +133,45 @@ export const adminService = {
   },
 
   async getAllUsers(params) {
-    const endpoints = [
-      API_ENDPOINTS.ADMIN.GET_USERS, // /api/admin/getallusers
-      '/api/admin/users',
-      '/api/admin/getusers',
-      '/api/admin/allusers',
-      '/api/users/getcontacts',
-      '/api/users',
-      '/api/users/all',
-    ];
-
     let rawUsers = [];
     let pagination = null;
 
-    for (const ep of endpoints) {
-      if (!ep) continue;
-      try {
-        const response = await api.get(ep, { params });
-        const res = response.data;
-        if (res && res.success !== false) {
-          const dataObj = typeof res.data === 'object' && res.data !== null ? res.data : {};
-          const list =
-            res.data?.users ||
-            res.data?.contacts ||
-            (Array.isArray(res.data) ? res.data : null) ||
-            res.users ||
-            res.contacts ||
-            (Array.isArray(res.message?.users) ? res.message.users : null) ||
-            (Array.isArray(res.message?.contacts) ? res.message.contacts : null) ||
-            (Array.isArray(res.message) ? res.message : null) ||
-            (Array.isArray(res) ? res : null);
+    try {
+      const response = await api.get(API_ENDPOINTS.ADMIN.GET_USERS, { params });
+      const res = response.data;
+      if (res && res.success !== false) {
+        const dataObj = typeof res.data === 'object' && res.data !== null ? res.data : {};
+        const list =
+          res.data?.users ||
+          res.data?.contacts ||
+          (Array.isArray(res.data) ? res.data : null) ||
+          res.users ||
+          res.contacts ||
+          (Array.isArray(res.message?.users) ? res.message.users : null) ||
+          (Array.isArray(res.message?.contacts) ? res.message.contacts : null) ||
+          (Array.isArray(res.message) ? res.message : null) ||
+          (Array.isArray(res) ? res : null);
 
-          if (Array.isArray(list) && list.length > 0) {
-            rawUsers = list;
-            pagination = dataObj.pagination || res.pagination;
-            break;
-          } else if (Array.isArray(list)) {
-            rawUsers = list;
-          }
+        if (Array.isArray(list)) {
+          rawUsers = list;
+          pagination = dataObj.pagination || res.pagination;
+        }
+      }
+    } catch {
+      // Fallback to getContacts if admin route is restricted
+      try {
+        const fallbackRes = await api.get(API_ENDPOINTS.USERS.GET_CONTACTS);
+        const res = fallbackRes.data;
+        const list =
+          res.data?.contacts ||
+          (Array.isArray(res.data) ? res.data : null) ||
+          res.contacts ||
+          [];
+        if (Array.isArray(list)) {
+          rawUsers = list;
         }
       } catch {
-        // Continue to next endpoint candidate
+        // Empty fallback
       }
     }
 
@@ -250,108 +220,47 @@ export const adminService = {
   },
 
   async createUser(payload) {
-    const endpoints = [
-      API_ENDPOINTS.ADMIN.CREATE_USER,
-      '/api/admin/users',
-      '/api/auth/register',
-      '/api/users/create',
-    ];
-
-    for (const ep of endpoints) {
-      try {
-        const response = await api.post(ep, payload);
-        const res = response.data;
-        if (res && res.success !== false) {
-          return res.data?.user || res.data || res.user;
-        }
-      } catch {
-        // Try next
-      }
+    const response = await api.post(API_ENDPOINTS.ADMIN.CREATE_USER, payload);
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to create user');
     }
-    throw new Error('Failed to create user on backend');
+    return res.data?.user || res.data || res.user;
   },
 
   async updateUser(id, payload) {
-    const endpoints = [
-      API_ENDPOINTS.ADMIN.UPDATE_USER(id),
-      `/api/admin/users/${id}`,
-      `/api/users/${id}`,
-      `/api/users/updateprofile`,
-    ];
-
-    for (const ep of endpoints) {
-      try {
-        const response = await api.put(ep, payload);
-        const res = response.data;
-        if (res && res.success !== false) {
-          return res.data?.user || res.data || res.user;
-        }
-      } catch {
-        // Try next
-      }
+    const response = await api.put(API_ENDPOINTS.ADMIN.UPDATE_USER(id), payload);
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to update user');
     }
-    throw new Error('Failed to update user');
+    return res.data?.user || res.data || res.user;
   },
 
   async setUserStatus(id, isActive) {
-    const endpoints = [
-      { method: 'put', url: API_ENDPOINTS.ADMIN.SET_STATUS(id), data: { isActive } },
-      { method: 'put', url: `/api/admin/users/${id}/status`, data: { isActive } },
-      { method: 'patch', url: `/api/admin/users/${id}`, data: { isActive } },
-      { method: 'put', url: `/api/admin/users/${id}`, data: { isActive } },
-    ];
-
-    for (const { method, url, data } of endpoints) {
-      try {
-        const response = await api[method](url, data);
-        if (response.data && response.data.success !== false) {
-          return response.data;
-        }
-      } catch {
-        // Try next
-      }
+    const response = await api.put(API_ENDPOINTS.ADMIN.SET_STATUS(id), { isActive });
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to update user status');
     }
-    throw new Error('Failed to update user status');
+    return res;
   },
 
   async resetPassword(id, newPassword) {
-    const endpoints = [
-      { url: API_ENDPOINTS.ADMIN.RESET_PASSWORD(id), data: { newPassword } },
-      { url: `/api/admin/users/${id}/resetpassword`, data: { newPassword } },
-      { url: `/api/admin/users/${id}/password`, data: { password: newPassword } },
-      { url: `/api/admin/resetpassword/${id}`, data: { newPassword } },
-    ];
-
-    for (const { url, data } of endpoints) {
-      try {
-        const response = await api.post(url, data);
-        if (response.data && response.data.success !== false) {
-          return response.data;
-        }
-      } catch {
-        // Try next
-      }
+    const response = await api.post(API_ENDPOINTS.ADMIN.RESET_PASSWORD(id), { newPassword });
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to reset password');
     }
-    throw new Error('Failed to reset password');
+    return res;
   },
 
   async deleteUser(id) {
-    const endpoints = [
-      API_ENDPOINTS.ADMIN.DELETE_USER(id),
-      `/api/admin/users/${id}`,
-      `/api/users/${id}`,
-    ];
-
-    for (const ep of endpoints) {
-      try {
-        const response = await api.delete(ep);
-        if (response.data && response.data.success !== false) {
-          return response.data;
-        }
-      } catch {
-        // Try next
-      }
+    const response = await api.delete(API_ENDPOINTS.ADMIN.DELETE_USER(id));
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to delete user');
     }
-    throw new Error('Failed to delete user');
+    return res;
   },
 };
