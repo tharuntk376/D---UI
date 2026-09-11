@@ -9,68 +9,89 @@ export const adminService = {
       const response = await api.get(API_ENDPOINTS.ADMIN.GET_STATS);
       const res = response.data;
       if (res && res.success !== false) {
-        const dataObj = typeof res.data === 'object' && res.data !== null ? res.data : res;
-        rawStats = dataObj.stats || dataObj.counts || dataObj;
+        if (res.data && typeof res.data === 'object') {
+          rawStats = res.data.stats || res.data.counts || res.data;
+        } else if (res.message && typeof res.message === 'object') {
+          rawStats = res.message.stats || res.message.counts || res.message;
+        } else if (res.stats && typeof res.stats === 'object') {
+          rawStats = res.stats;
+        } else {
+          rawStats = res;
+        }
       }
     } catch {
-      // Backend does not expose a dedicated /getallstats route; fall back to live collection metrics
+      // Backend does not expose or error on dedicated route; fall back to live metrics
     }
 
-    // Extract stats with all field name variations
+    const extractNum = (val) => {
+      if (val === null || val === undefined) return null;
+      if (typeof val === 'number' && !isNaN(val)) return val;
+      if (typeof val === 'string' && val.trim() !== '' && !isNaN(Number(val))) return Number(val);
+      return null;
+    };
+
+    // Extract stats with all field name and nested structure variations
     let totalUsers =
-      rawStats?.totalUsers ??
-      rawStats?.users ??
-      rawStats?.userCount ??
-      rawStats?.usersCount ??
-      rawStats?.total_users ??
-      rawStats?.counts?.users ??
-      rawStats?.counts?.totalUsers ??
-      rawStats?.summary?.users;
+      extractNum(rawStats?.users?.total) ??
+      extractNum(rawStats?.totalUsers) ??
+      extractNum(rawStats?.users) ??
+      extractNum(rawStats?.userCount) ??
+      extractNum(rawStats?.usersCount) ??
+      extractNum(rawStats?.total_users) ??
+      extractNum(rawStats?.counts?.users) ??
+      extractNum(rawStats?.counts?.totalUsers) ??
+      extractNum(rawStats?.summary?.users);
 
     let activeUsers =
-      rawStats?.activeUsers ??
-      rawStats?.active_users ??
-      rawStats?.activeUsersCount ??
-      rawStats?.activeCount ??
-      rawStats?.counts?.activeUsers;
+      extractNum(rawStats?.users?.active) ??
+      extractNum(rawStats?.activeUsers) ??
+      extractNum(rawStats?.active_users) ??
+      extractNum(rawStats?.activeUsersCount) ??
+      extractNum(rawStats?.activeCount) ??
+      extractNum(rawStats?.counts?.activeUsers);
 
     let totalConversations =
-      rawStats?.totalConversations ??
-      rawStats?.conversations ??
-      rawStats?.conversationCount ??
-      rawStats?.conversationsCount ??
-      rawStats?.total_conversations ??
-      rawStats?.counts?.conversations ??
-      rawStats?.chats ??
-      rawStats?.totalChats;
+      extractNum(rawStats?.chat?.conversations) ??
+      extractNum(rawStats?.totalConversations) ??
+      extractNum(rawStats?.conversations) ??
+      extractNum(rawStats?.conversationCount) ??
+      extractNum(rawStats?.conversationsCount) ??
+      extractNum(rawStats?.total_conversations) ??
+      extractNum(rawStats?.counts?.conversations) ??
+      extractNum(rawStats?.chats) ??
+      extractNum(rawStats?.totalChats);
 
     let totalMessages =
-      rawStats?.totalMessages ??
-      rawStats?.messages ??
-      rawStats?.messageCount ??
-      rawStats?.messagesCount ??
-      rawStats?.total_messages ??
-      rawStats?.counts?.messages;
+      extractNum(rawStats?.chat?.messages) ??
+      extractNum(rawStats?.totalMessages) ??
+      extractNum(rawStats?.messages) ??
+      extractNum(rawStats?.messageCount) ??
+      extractNum(rawStats?.messagesCount) ??
+      extractNum(rawStats?.total_messages) ??
+      extractNum(rawStats?.counts?.messages);
 
     let totalFiles =
-      rawStats?.totalFiles ??
-      rawStats?.files ??
-      rawStats?.fileCount ??
-      rawStats?.filesCount ??
-      rawStats?.media ??
-      rawStats?.mediaCount ??
-      rawStats?.mediaFiles ??
-      rawStats?.total_files;
+      extractNum(rawStats?.storage?.totalFiles) ??
+      extractNum(rawStats?.totalFiles) ??
+      extractNum(rawStats?.files) ??
+      extractNum(rawStats?.fileCount) ??
+      extractNum(rawStats?.filesCount) ??
+      extractNum(rawStats?.media) ??
+      extractNum(rawStats?.mediaCount) ??
+      extractNum(rawStats?.mediaFiles) ??
+      extractNum(rawStats?.total_files);
 
     let totalStorageBytes =
-      rawStats?.totalStorageBytes ??
-      rawStats?.storageBytes ??
-      rawStats?.storage ??
-      rawStats?.storageSize ??
-      rawStats?.totalStorage ??
-      rawStats?.size ??
-      rawStats?.usedStorage ??
-      (rawStats?.storageMB ? rawStats.storageMB * 1024 * 1024 : 0);
+      extractNum(rawStats?.storage?.totalBytes) ??
+      (rawStats?.storage?.totalMB ? Number(rawStats.storage.totalMB) * 1024 * 1024 : null) ??
+      extractNum(rawStats?.totalStorageBytes) ??
+      extractNum(rawStats?.storageBytes) ??
+      extractNum(rawStats?.storage) ??
+      extractNum(rawStats?.storageSize) ??
+      extractNum(rawStats?.totalStorage) ??
+      extractNum(rawStats?.size) ??
+      extractNum(rawStats?.usedStorage) ??
+      (rawStats?.storageMB ? Number(rawStats.storageMB) * 1024 * 1024 : 0);
 
     // Live Data Aggregation Fallback (ensures accurate real data even if server has no dedicated stats route)
     try {
