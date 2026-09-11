@@ -75,13 +75,16 @@ export const API_ENDPOINTS = {
     MARK_ALL_READ: '/api/notifications/markallread',
   },
   ADMIN: {
-    CREATE_USER: '/api/admin/createuser',
+    GET_STATS: '/api/admin/getstats',
     GET_USERS: '/api/admin/getallusers',
     GET_USER: (id) => `/api/admin/getuserbyid/${id}`,
+    CREATE_USER: '/api/admin/createuser',
     UPDATE_USER: (id) => `/api/admin/updateuser/${id}`,
     SET_STATUS: (id) => `/api/admin/usersstatus/${id}`,
     RESET_PASSWORD: (id) => `/api/admin/resetpassword/${id}`,
     DELETE_USER: (id) => `/api/admin/deleteuser/${id}`,
-    GET_STATS: '/api/admin/getallstats',
+    GET_CONVERSATIONS: '/api/admin/getallconversations',
+    GET_FILES: '/api/admin/getallfiles',
+    GET_LOGS: '/api/admin/getalllogs',
   },
 };

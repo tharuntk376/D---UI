@@ -28,6 +28,7 @@ import {
   Pause,
   Image as ImageIcon,
   Headphones,
+  ArrowLeft,
 } from 'lucide-react';
 
 // Popular WhatsApp Emojis
@@ -193,9 +194,11 @@ const VoiceNotePlayer = ({ audioUrl, duration }) => {
 };
 
 export const ChatArea = ({
+  isMobile,
   conversation,
   messages,
   contacts = [],
+  onBack,
   onStartNewChat,
   isLoading,
   currentUserId,
@@ -580,42 +583,43 @@ export const ChatArea = ({
           justifyContent: 'center',
           background: '#111b21',
           color: '#8696a0',
-          padding: '32px',
+          padding: 'clamp(16px, 4vw, 32px)',
           textAlign: 'center',
           position: 'relative',
           overflowY: 'auto',
+          height: '100%',
         }}
       >
         <div
           style={{
-            width: '84px',
-            height: '84px',
+            width: '72px',
+            height: '72px',
             borderRadius: '50%',
             background: 'rgba(0, 168, 132, 0.12)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: '20px',
+            marginBottom: '16px',
             border: '1px solid rgba(0, 168, 132, 0.3)',
           }}
         >
-          <Send size={38} color="#00a884" />
+          <Send size={32} color="#00a884" />
         </div>
 
-        <h2 style={{ fontSize: '1.6rem', color: '#e9edef', marginBottom: '8px', fontWeight: 600 }}>
+        <h2 style={{ fontSize: '1.4rem', color: '#e9edef', marginBottom: '6px', fontWeight: 600 }}>
           WhatsApp Web
         </h2>
-        <p style={{ maxWidth: '420px', fontSize: '0.92rem', color: '#8696a0', lineHeight: 1.5, marginBottom: '24px' }}>
+        <p style={{ maxWidth: '420px', fontSize: '0.88rem', color: '#8696a0', lineHeight: 1.5, marginBottom: '20px' }}>
           Send and receive real-time messages, voice notes, photos, and files with end-to-end security.
         </p>
 
         {/* Available Contacts Quick-Start List */}
         {contacts && contacts.length > 0 && (
-          <div style={{ maxWidth: '480px', width: '100%', marginBottom: '28px' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#aebac1', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '12px' }}>
+          <div style={{ maxWidth: '480px', width: '100%', marginBottom: '20px' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#aebac1', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '10px' }}>
               Select a Contact to Message
             </span>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px' }}>
               {contacts.slice(0, 6).map((c) => (
                 <div
                   key={c._id}
@@ -623,8 +627,8 @@ export const ChatArea = ({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px 14px',
+                    gap: '8px',
+                    padding: '8px 10px',
                     background: '#1f2c34',
                     borderRadius: '10px',
                     cursor: 'pointer',
@@ -633,12 +637,12 @@ export const ChatArea = ({
                   }}
                   className="card-hover"
                 >
-                  <Avatar name={c.displayName || c.username} avatarUrl={c.avatar} size={36} />
+                  <Avatar name={c.displayName || c.username} avatarUrl={c.avatar} size={32} />
                   <div style={{ textAlign: 'left', minWidth: 0, flex: 1 }}>
-                    <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#e9edef', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#e9edef', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {c.displayName || c.username}
                     </span>
-                    <span style={{ fontSize: '0.74rem', color: '#00a884' }}>Click to chat</span>
+                    <span style={{ fontSize: '0.7rem', color: '#00a884' }}>Click to chat</span>
                   </div>
                 </div>
               ))}
@@ -646,7 +650,7 @@ export const ChatArea = ({
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#8696a0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.76rem', color: '#8696a0' }}>
           <span>🔒 End-to-end encrypted</span>
         </div>
       </div>
@@ -659,7 +663,8 @@ export const ChatArea = ({
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        height: 'calc(100vh - 68px)',
+        height: '100%',
+        maxHeight: '100%',
         background: 'var(--bg-main)',
         position: 'relative',
         overflow: 'hidden',
@@ -668,8 +673,9 @@ export const ChatArea = ({
       {/* WhatsApp Header */}
       <header
         style={{
-          height: '68px',
-          padding: '0 20px',
+          minHeight: '58px',
+          height: '60px',
+          padding: '0 clamp(8px, 2.5vw, 18px)',
           background: '#1f2c34',
           borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
           display: 'flex',
@@ -678,23 +684,55 @@ export const ChatArea = ({
           zIndex: 20,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+          {onBack && (
+            <button
+              type="button"
+              onClick={onBack}
+              className="btn btn-ghost btn-icon show-mobile"
+              style={{
+                width: '36px',
+                height: '36px',
+                color: '#e9edef',
+                padding: 0,
+                flexShrink: 0,
+              }}
+              title="Back to Chats"
+            >
+              <ArrowLeft size={20} />
+            </button>
+          )}
+
           <Avatar
             name={recipient?.displayName || recipient?.username || 'User'}
             avatarUrl={recipient?.avatar}
-            size={42}
+            size={38}
             isOnline={isRecipientOnline}
             showStatus={true}
           />
-          <div style={{ textAlign: 'left' }}>
-            <h3 style={{ fontSize: '1.05rem', margin: 0, color: '#e9edef' }}>
+          <div style={{ textAlign: 'left', minWidth: 0 }}>
+            <h3
+              style={{
+                fontSize: '0.98rem',
+                margin: 0,
+                color: '#e9edef',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: isMobile ? '150px' : '320px',
+              }}
+            >
               {recipient?.displayName || recipient?.username}
             </h3>
             <span
               style={{
-                fontSize: '0.76rem',
+                fontSize: '0.74rem',
                 color: typingUser ? '#25d366' : isRecipientOnline ? '#25d366' : '#8696a0',
                 fontWeight: 500,
+                display: 'block',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
               }}
             >
               {typingUser ? `${typingUser} is typing...` : isRecipientOnline ? 'Online' : 'Offline'}
@@ -703,30 +741,30 @@ export const ChatArea = ({
         </div>
 
         {/* In-Chat Search & Call Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
           <button
             onClick={() => setShowSearch((prev) => !prev)}
             className="btn btn-ghost btn-icon"
-            style={{ color: '#aebac1' }}
+            style={{ color: '#aebac1', width: '34px', height: '34px' }}
             title="Search in conversation"
           >
-            <Search size={18} />
+            <Search size={17} />
           </button>
           <button
             onClick={() => alert(`Starting voice call with ${recipient?.displayName || recipient?.username}...`)}
             className="btn btn-ghost btn-icon"
-            style={{ color: '#aebac1' }}
+            style={{ color: '#aebac1', width: '34px', height: '34px' }}
             title="Voice Call"
           >
-            <Phone size={18} />
+            <Phone size={17} />
           </button>
           <button
             onClick={() => alert(`Starting video call with ${recipient?.displayName || recipient?.username}...`)}
             className="btn btn-ghost btn-icon"
-            style={{ color: '#aebac1' }}
+            style={{ color: '#aebac1', width: '34px', height: '34px' }}
             title="Video Call"
           >
-            <Video size={18} />
+            <Video size={17} />
           </button>
         </div>
       </header>
@@ -913,6 +951,25 @@ export const ChatArea = ({
                   >
                     {/* Hover Dropdown Chevron Button */}
                     {!isEditing && (
+                      <>
+                        {isHovered && (
+                          <div className="wa-reaction-bar" style={{ display: 'flex', position: 'absolute', top: '-38px', right: '0', zIndex: 20 }}>
+                            {REACTION_EMOJIS.map((emoji) => (
+                              <button
+                                key={emoji}
+                                type="button"
+                                className="wa-reaction-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onAddReaction(msgId, emoji);
+                                  setHoveredMessageId(null);
+                                }}
+                              >
+                                {emoji}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       <button
                         type="button"
                         className="wa-msg-dropdown-btn"
@@ -924,6 +981,7 @@ export const ChatArea = ({
                       >
                         <ChevronDown size={14} />
                       </button>
+                      </>
                     )}
 
                     {/* Quoted Message Preview (if reply) */}
@@ -1319,15 +1377,17 @@ export const ChatArea = ({
           className="animate-fade-in"
           style={{
             position: 'absolute',
-            bottom: '78px',
-            left: '20px',
+            bottom: '72px',
+            left: '10px',
+            right: isMobile ? '10px' : 'auto',
             background: '#202c33',
             border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: '12px',
             padding: '12px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
             zIndex: 60,
-            width: '320px',
+            width: isMobile ? 'auto' : '320px',
+            maxWidth: '100%',
           }}
         >
           <div
@@ -1422,12 +1482,12 @@ export const ChatArea = ({
       {/* WhatsApp Message Input Bar */}
       <footer
         style={{
-          padding: '12px 20px',
+          padding: '8px clamp(8px, 2.5vw, 18px)',
           background: '#202c33',
           borderTop: '1px solid rgba(255,255,255,0.06)',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px',
+          gap: '6px',
           position: 'relative',
         }}
       >
@@ -1463,38 +1523,38 @@ export const ChatArea = ({
               justifyContent: 'space-between',
               background: '#111b21',
               borderRadius: '24px',
-              padding: '8px 16px',
+              padding: '6px 12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span
                 className="animate-pulse-recording"
-                style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }}
+                style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444', display: 'inline-block' }}
               />
-              <span style={{ fontSize: '0.9rem', color: '#e9edef', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.85rem', color: '#e9edef', fontWeight: 600 }}>
                 {Math.floor(recordingSeconds / 60)}:{(recordingSeconds % 60).toString().padStart(2, '0')}
               </span>
-              <span style={{ fontSize: '0.8rem', color: '#8696a0' }}>Recording audio...</span>
+              <span style={{ fontSize: '0.75rem', color: '#8696a0' }}>Recording...</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <button
                 type="button"
                 className="btn btn-ghost btn-icon"
-                style={{ color: '#ef4444', width: '36px', height: '36px' }}
+                style={{ color: '#ef4444', width: '32px', height: '32px' }}
                 onClick={cancelVoiceRecording}
                 title="Cancel recording"
               >
-                <Trash2 size={18} />
+                <Trash2 size={16} />
               </button>
               <button
                 type="button"
                 className="btn btn-primary"
-                style={{ borderRadius: '50%', width: '38px', height: '38px', padding: 0, background: '#00a884' }}
+                style={{ borderRadius: '50%', width: '34px', height: '34px', padding: 0, background: '#00a884' }}
                 onClick={sendVoiceRecording}
                 title="Send voice note"
               >
-                <Send size={16} />
+                <Send size={15} />
               </button>
             </div>
           </div>
@@ -1506,11 +1566,11 @@ export const ChatArea = ({
               ref={emojiBtnRef}
               type="button"
               className="btn btn-ghost btn-icon"
-              style={{ color: showEmojiPicker ? '#00a884' : '#8696a0', width: '36px', height: '36px' }}
+              style={{ color: showEmojiPicker ? '#00a884' : '#8696a0', width: '34px', height: '34px', padding: 0, flexShrink: 0 }}
               onClick={toggleEmojiPicker}
               title="Emojis"
             >
-              <Smile size={22} />
+              <Smile size={20} />
             </button>
 
             {/* Attachments Menu Trigger */}
@@ -1518,16 +1578,16 @@ export const ChatArea = ({
               ref={attachBtnRef}
               type="button"
               className="btn btn-ghost btn-icon"
-              style={{ color: showAttachMenu ? '#00a884' : '#8696a0', width: '36px', height: '36px' }}
+              style={{ color: showAttachMenu ? '#00a884' : '#8696a0', width: '34px', height: '34px', padding: 0, flexShrink: 0 }}
               onClick={toggleAttachMenu}
               title="Attach File"
               disabled={isUploading}
             >
-              <Paperclip size={20} />
+              <Paperclip size={18} />
             </button>
 
             {/* Input Form */}
-            <form onSubmit={handleSend} style={{ flex: 1, display: 'flex' }}>
+            <form onSubmit={handleSend} style={{ flex: 1, display: 'flex', minWidth: 0 }}>
               <input
                 type="text"
                 className="input-field"
@@ -1536,9 +1596,9 @@ export const ChatArea = ({
                   background: '#2a3942',
                   border: 'none',
                   borderRadius: '10px',
-                  padding: '10px 16px',
+                  padding: '9px 12px',
                   color: '#e9edef',
-                  fontSize: '0.94rem',
+                  fontSize: '0.9rem',
                 }}
                 placeholder={isUploading ? 'Uploading file...' : 'Type a message'}
                 value={inputText}
@@ -1553,8 +1613,8 @@ export const ChatArea = ({
                 type="button"
                 onClick={handleSend}
                 style={{
-                  width: '44px',
-                  height: '44px',
+                  width: '38px',
+                  height: '38px',
                   borderRadius: '50%',
                   background: '#00a884',
                   border: 'none',
@@ -1565,18 +1625,19 @@ export const ChatArea = ({
                   cursor: 'pointer',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
                   transition: 'transform 0.15s',
+                  flexShrink: 0,
                 }}
                 title="Send message"
               >
-                <Send size={18} />
+                <Send size={16} />
               </button>
             ) : (
               <button
                 type="button"
                 onClick={startVoiceRecording}
                 style={{
-                  width: '44px',
-                  height: '44px',
+                  width: '38px',
+                  height: '38px',
                   borderRadius: '50%',
                   background: '#00a884',
                   border: 'none',
@@ -1587,10 +1648,11 @@ export const ChatArea = ({
                   cursor: 'pointer',
                   boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
                   transition: 'transform 0.15s',
+                  flexShrink: 0,
                 }}
                 title="Hold or click to record voice note"
               >
-                <Mic size={20} />
+                <Mic size={18} />
               </button>
             )}
           </>

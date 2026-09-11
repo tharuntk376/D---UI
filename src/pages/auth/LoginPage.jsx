@@ -86,7 +86,7 @@ export const LoginPage = () => {
         justifyContent: 'center',
         background: 'radial-gradient(ellipse at top, #1e1b4b 0%, #0b0d14 60%)',
         position: 'relative',
-        padding: '24px',
+        padding: 'clamp(14px, 3vw, 24px)',
       }}
     >
       {/* Background glowing orbs */}
@@ -117,30 +117,30 @@ export const LoginPage = () => {
 
       <div style={{ width: '100%', maxWidth: '440px', position: 'relative', zIndex: 10 }}>
         {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <div
             style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '16px',
+              width: '50px',
+              height: '50px',
+              borderRadius: '14px',
               background: 'var(--gradient-primary)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 8px 24px var(--primary-glow)',
-              marginBottom: '16px',
+              marginBottom: '12px',
             }}
           >
-            <Sparkles size={30} color="#fff" />
+            <Sparkles size={26} color="#fff" />
           </div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '6px' }}>Welcome Back</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: '4px' }}>Welcome Back</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>
             Sign in to access your chats and administration portal
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="card glass-panel" style={{ padding: '32px' }}>
+        <div className="card glass-panel" style={{ padding: 'clamp(18px, 4vw, 32px)' }}>
           {error && (
             <div
               style={{
@@ -161,7 +161,7 @@ export const LoginPage = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             <div className="input-group">
               <label className="input-label">Username or Email</label>
               <div style={{ position: 'relative' }}>
@@ -199,10 +199,9 @@ export const LoginPage = () => {
                     color: 'var(--primary-light)',
                     fontSize: '0.78rem',
                     cursor: 'pointer',
-                    padding: 0,
                   }}
                 >
-                  Forgot password?
+                  Forgot Password?
                 </button>
               </div>
               <div style={{ position: 'relative' }}>
@@ -231,7 +230,7 @@ export const LoginPage = () => {
             <button
               type="submit"
               className="btn btn-primary"
-              style={{ width: '100%', padding: '12px', fontSize: '1rem', marginTop: '6px' }}
+              style={{ width: '100%', padding: '12px', fontSize: '0.95rem', marginTop: '4px' }}
               disabled={loading}
             >
               {loading ? (
@@ -246,14 +245,14 @@ export const LoginPage = () => {
           </form>
 
           {/* Quick Fill Credentials */}
-          <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid var(--border-subtle)' }}>
+          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
             <span
               style={{
                 display: 'block',
                 textAlign: 'center',
-                fontSize: '0.76rem',
+                fontSize: '0.72rem',
                 color: 'var(--text-muted)',
-                marginBottom: '12px',
+                marginBottom: '10px',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
@@ -261,23 +260,23 @@ export const LoginPage = () => {
             >
               Fill Credentials (API Auth)
             </span>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px' }}>
               <button
                 type="button"
                 className="btn btn-secondary"
-                style={{ fontSize: '0.78rem', padding: '10px 12px' }}
+                style={{ fontSize: '0.78rem', padding: '8px 10px' }}
                 onClick={() => handleFillCredentials('user')}
               >
-                <UserCheck size={15} color="var(--primary-light)" />
+                <UserCheck size={14} color="var(--primary-light)" />
                 <span>Fill User Account</span>
               </button>
               <button
                 type="button"
                 className="btn btn-secondary"
-                style={{ fontSize: '0.78rem', padding: '10px 12px' }}
+                style={{ fontSize: '0.78rem', padding: '8px 10px' }}
                 onClick={() => handleFillCredentials('admin')}
               >
-                <ShieldCheck size={15} color="var(--warning)" />
+                <ShieldCheck size={14} color="var(--warning)" />
                 <span>Fill Admin Account</span>
               </button>
             </div>

@@ -181,44 +181,46 @@ export const AdminPage = () => {
     <div style={{ minHeight: '100vh', background: 'var(--bg-main)', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
-      <main style={{ flex: 1, padding: '32px 40px', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
+      <main style={{ flex: 1, padding: 'clamp(14px, 3vw, 36px)', maxWidth: '1440px', margin: '0 auto', width: '100%' }}>
         {/* Header Title & Actions */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '28px',
+            marginBottom: '24px',
             flexWrap: 'wrap',
-            gap: '16px',
+            gap: '14px',
           }}
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
               <span className="badge badge-warning">System Administration</span>
             </div>
-            <h1 style={{ fontSize: '1.85rem' }}>Management & Overview</h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
+            <h1 style={{ fontSize: 'clamp(1.35rem, 3vw, 1.85rem)' }}>Management & Overview</h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>
               Monitor system activity, manage credentials, and control access permissions.
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
               onClick={loadData}
               className="btn btn-secondary"
               title="Refresh Data"
               disabled={loading}
+              style={{ padding: '8px 14px', fontSize: '0.84rem' }}
             >
-              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+              <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
               <span>Sync</span>
             </button>
 
             <button
               onClick={() => setShowCreateModal(true)}
               className="btn btn-primary"
+              style={{ padding: '8px 14px', fontSize: '0.84rem' }}
             >
-              <UserPlus size={18} />
+              <UserPlus size={16} />
               <span>Create User</span>
             </button>
           </div>
@@ -229,19 +231,19 @@ export const AdminPage = () => {
           <div
             className="animate-fade-in"
             style={{
-              padding: '12px 18px',
+              padding: '10px 14px',
               borderRadius: 'var(--radius-md)',
-              marginBottom: '24px',
+              marginBottom: '20px',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
               background: feedback.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
               border: `1px solid ${feedback.type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
               color: feedback.type === 'success' ? '#6ee7b7' : '#fca5a5',
-              fontSize: '0.9rem',
+              fontSize: '0.88rem',
             }}
           >
-            {feedback.type === 'success' ? <CheckCircle size={18} /> : <AlertTriangle size={18} />}
+            {feedback.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
             <span>{feedback.message}</span>
           </div>
         )}
@@ -250,120 +252,124 @@ export const AdminPage = () => {
         <section
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '20px',
-            marginBottom: '32px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            gap: 'clamp(10px, 2vw, 18px)',
+            marginBottom: '28px',
           }}
         >
           {/* Card 1: Total Users */}
-          <div className="card" style={{ padding: '20px' }}>
+          <div className="card" style={{ padding: 'clamp(12px, 2vw, 20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
                   Total Users
                 </span>
-                <h2 style={{ fontSize: '2rem', marginTop: '6px' }}>{stats?.totalUsers ?? users.length}</h2>
+                <h2 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.9rem)', marginTop: '4px' }}>{stats?.totalUsers ?? users.length}</h2>
               </div>
               <div
                 style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '12px',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
                   background: 'rgba(99, 102, 241, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <Users size={22} color="var(--primary-light)" />
+                <Users size={18} color="var(--primary-light)" />
               </div>
             </div>
-            <div style={{ marginTop: '12px', fontSize: '0.78rem', color: 'var(--success)' }}>
-              <span>● {stats?.activeUsers ?? users.filter(u => u.isActive).length} active accounts</span>
+            <div style={{ marginTop: '8px', fontSize: '0.74rem', color: 'var(--success)' }}>
+              <span>● {stats?.activeUsers ?? users.filter(u => u.isActive).length} active</span>
             </div>
           </div>
 
           {/* Card 2: Active Conversations */}
-          <div className="card" style={{ padding: '20px' }}>
+          <div className="card" style={{ padding: 'clamp(12px, 2vw, 20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
                   Conversations
                 </span>
-                <h2 style={{ fontSize: '2rem', marginTop: '6px' }}>{stats?.totalConversations ?? 0}</h2>
+                <h2 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.9rem)', marginTop: '4px' }}>{stats?.totalConversations ?? 0}</h2>
               </div>
               <div
                 style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '12px',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
                   background: 'rgba(6, 182, 212, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <MessageSquare size={22} color="var(--info)" />
+                <MessageSquare size={18} color="var(--info)" />
               </div>
             </div>
-            <div style={{ marginTop: '12px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-              <span>Real-time active channels</span>
+            <div style={{ marginTop: '8px', fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
+              <span>Channels</span>
             </div>
           </div>
 
           {/* Card 3: Total Messages */}
-          <div className="card" style={{ padding: '20px' }}>
+          <div className="card" style={{ padding: 'clamp(12px, 2vw, 20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-                  Total Messages
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Messages
                 </span>
-                <h2 style={{ fontSize: '2rem', marginTop: '6px' }}>{stats?.totalMessages ?? 0}</h2>
+                <h2 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.9rem)', marginTop: '4px' }}>{stats?.totalMessages ?? 0}</h2>
               </div>
               <div
                 style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '12px',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
                   background: 'rgba(245, 158, 11, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <Shield size={22} color="var(--warning)" />
+                <Shield size={18} color="var(--warning)" />
               </div>
             </div>
-            <div style={{ marginTop: '12px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-              <span>Encrypted & persisted</span>
+            <div style={{ marginTop: '8px', fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
+              <span>Encrypted</span>
             </div>
           </div>
 
           {/* Card 4: Storage Used */}
-          <div className="card" style={{ padding: '20px' }}>
+          <div className="card" style={{ padding: 'clamp(12px, 2vw, 20px)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-                  Storage / Media
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Storage
                 </span>
-                <h2 style={{ fontSize: '2rem', marginTop: '6px' }}>{formatStorage(stats?.totalStorageBytes)}</h2>
+                <h2 style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.9rem)', marginTop: '4px' }}>{formatStorage(stats?.totalStorageBytes)}</h2>
               </div>
               <div
                 style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '12px',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '10px',
                   background: 'rgba(217, 70, 239, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  flexShrink: 0,
                 }}
               >
-                <HardDrive size={22} color="#d946ef" />
+                <HardDrive size={18} color="#d946ef" />
               </div>
             </div>
-            <div style={{ marginTop: '12px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
-              <span>{stats?.totalFiles ?? 0} uploaded media files</span>
+            <div style={{ marginTop: '8px', fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
+              <span>{stats?.totalFiles ?? 0} media files</span>
             </div>
           </div>
         </section>
@@ -373,44 +379,44 @@ export const AdminPage = () => {
           {/* Table Toolbar */}
           <div
             style={{
-              padding: '20px 24px',
+              padding: '16px clamp(12px, 2vw, 24px)',
               borderBottom: '1px solid var(--border-subtle)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: '16px',
+              gap: '12px',
               flexWrap: 'wrap',
             }}
           >
             <div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '2px' }}>User Directory</h3>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              <h3 style={{ fontSize: '1.1rem', marginBottom: '2px' }}>User Directory</h3>
+              <span style={{ fontSize: '0.76rem', color: 'var(--text-secondary)' }}>
                 Viewing {users.length} registered accounts
               </span>
             </div>
 
             {/* Filter controls */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <div style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', width: 'auto', flex: '1 1 auto', justifyContent: 'flex-end' }}>
+              <div style={{ position: 'relative', flex: '1 1 180px', minWidth: '150px' }}>
                 <input
                   type="text"
                   className="input-field"
                   style={{
-                    paddingLeft: '36px',
-                    paddingTop: '8px',
-                    paddingBottom: '8px',
-                    fontSize: '0.85rem',
-                    width: '220px',
+                    paddingLeft: '34px',
+                    paddingTop: '7px',
+                    paddingBottom: '7px',
+                    fontSize: '0.82rem',
+                    width: '100%',
                   }}
                   placeholder="Search user or email..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <Search
-                  size={15}
+                  size={14}
                   style={{
                     position: 'absolute',
-                    left: '12px',
+                    left: '10px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     color: 'var(--text-muted)',
@@ -420,7 +426,7 @@ export const AdminPage = () => {
 
               <select
                 className="input-field"
-                style={{ padding: '8px 12px', fontSize: '0.85rem', width: '130px' }}
+                style={{ padding: '7px 10px', fontSize: '0.82rem', width: 'auto', minWidth: '105px', flex: '1 1 105px' }}
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
               >
@@ -431,7 +437,7 @@ export const AdminPage = () => {
 
               <select
                 className="input-field"
-                style={{ padding: '8px 12px', fontSize: '0.85rem', width: '130px' }}
+                style={{ padding: '7px 10px', fontSize: '0.82rem', width: 'auto', minWidth: '110px', flex: '1 1 110px' }}
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
@@ -443,7 +449,7 @@ export const AdminPage = () => {
           </div>
 
           {/* Users Table */}
-          <div style={{ overflowX: 'auto' }}>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr

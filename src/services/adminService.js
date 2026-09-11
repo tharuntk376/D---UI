@@ -240,6 +240,15 @@ export const adminService = {
     };
   },
 
+  async getUserById(id) {
+    const response = await api.get(API_ENDPOINTS.ADMIN.GET_USER(id));
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to retrieve user details');
+    }
+    return res.data?.user || res.data || res.user;
+  },
+
   async createUser(payload) {
     const response = await api.post(API_ENDPOINTS.ADMIN.CREATE_USER, payload);
     const res = response.data;
@@ -283,5 +292,45 @@ export const adminService = {
       throw new Error(res.error?.message || res.message || 'Failed to delete user');
     }
     return res;
+  },
+
+  async getAllConversations(params) {
+    const response = await api.get(API_ENDPOINTS.ADMIN.GET_CONVERSATIONS, { params });
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to retrieve conversations');
+    }
+    return {
+      conversations: res.data?.conversations || res.conversations || [],
+      pagination: res.data?.pagination || res.pagination || { total: 0, page: 1, limit: 20, pages: 0 },
+    };
+  },
+
+  async getAllFiles(params) {
+    const response = await api.get(API_ENDPOINTS.ADMIN.GET_FILES, { params });
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to retrieve files');
+    }
+    return {
+      files: res.data?.files || res.files || [],
+      pagination: res.data?.pagination || res.pagination || { total: 0, page: 1, limit: 20, pages: 0 },
+    };
+  },
+
+  async getAllLogs(params) {
+    const response = await api.get(API_ENDPOINTS.ADMIN.GET_LOGS, { params });
+    const res = response.data;
+    if (res.success === false) {
+      throw new Error(res.error?.message || res.message || 'Failed to retrieve audit logs');
+    }
+    return {
+      logs: res.data?.logs || res.logs || [],
+      pagination: res.data?.pagination || res.pagination || { total: 0, page: 1, limit: 50, pages: 0 },
+    };
+  },
+
+  getStats() {
+    return this.getAllStats();
   },
 };

@@ -590,44 +590,64 @@ export const ChatPage = () => {
     }
   };
 
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleTyping = (isTyping) => {
     if (activeConversation) {
       sendTyping(activeConversation._id, isTyping);
     }
   };
 
+  const showSidebar = !isMobile || !activeConversation;
+  const showChatArea = !isMobile || !!activeConversation;
+
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ height: '100dvh', maxHeight: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <Navbar />
       <CallModal />
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <ChatSidebar
-          conversations={conversations}
-          contacts={contacts}
-          currentUserId={user?._id}
-          activeConversationId={activeConversation?._id}
-          onSelectConversation={handleSelectConversation}
-          onStartNewChat={handleStartNewChat}
-          onlineUserIds={onlineUserIds}
-          typingUsers={typingUsers}
-          isLoading={isLoading}
-        />
-        <ChatArea
-          conversation={activeConversation}
-          messages={messages}
-          contacts={contacts}
-          onStartNewChat={handleStartNewChat}
-          isLoading={isLoading}
-          currentUserId={user?._id}
-          onSendMessage={handleSendMessage}
-          onRetryMessage={handleRetryMessage}
-          onEditMessage={handleEditMessage}
-          onDeleteMessage={handleDeleteMessage}
-          onAddReaction={handleAddReaction}
-          onTyping={handleTyping}
-          onlineUserIds={onlineUserIds}
-          typingUser={activeConversation ? typingUsers[activeConversation._id] : undefined}
-        />
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+        {showSidebar && (
+          <ChatSidebar
+            isMobile={isMobile}
+            conversations={conversations}
+            contacts={contacts}
+            currentUserId={user?._id}
+            activeConversationId={activeConversation?._id}
+            onSelectConversation={handleSelectConversation}
+            onStartNewChat={handleStartNewChat}
+            onlineUserIds={onlineUserIds}
+            typingUsers={typingUsers}
+            isLoading={isLoading}
+          />
+        )}
+        {showChatArea && (
+          <ChatArea
+            isMobile={isMobile}
+            conversation={activeConversation}
+            messages={messages}
+            contacts={contacts}
+            onBack={() => setActiveConversation(null)}
+            onStartNewChat={handleStartNewChat}
+            isLoading={isLoading}
+            currentUserId={user?._id}
+            onSendMessage={handleSendMessage}
+            onRetryMessage={handleRetryMessage}
+            onEditMessage={handleEditMessage}
+            onDeleteMessage={handleDeleteMessage}
+            onAddReaction={handleAddReaction}
+            onTyping={handleTyping}
+            onlineUserIds={onlineUserIds}
+            typingUser={activeConversation ? typingUsers[activeConversation._id] : undefined}
+          />
+        )}
       </div>
     </div>
   );

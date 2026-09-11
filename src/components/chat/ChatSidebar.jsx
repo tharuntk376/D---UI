@@ -3,6 +3,7 @@ import { Avatar } from '../common/Avatar';
 import { Search, Plus, MessageSquare, Users, Circle } from 'lucide-react';
 
 export const ChatSidebar = ({
+  isMobile,
   conversations,
   contacts,
   currentUserId,
@@ -58,17 +59,19 @@ export const ChatSidebar = ({
   return (
     <aside
       style={{
-        width: '360px',
-        minWidth: '320px',
-        height: 'calc(100vh - 68px)',
+        width: isMobile ? '100%' : '360px',
+        minWidth: isMobile ? '100%' : '300px',
+        maxWidth: isMobile ? '100%' : '380px',
+        height: '100%',
         background: 'var(--bg-card)',
-        borderRight: '1px solid var(--border-subtle)',
+        borderRight: isMobile ? 'none' : '1px solid var(--border-subtle)',
         display: 'flex',
         flexDirection: 'column',
+        flexShrink: 0,
       }}
     >
       {/* Top action header */}
-      <div style={{ padding: '16px 16px 12px 16px', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div style={{ padding: '14px 14px 10px 14px', borderBottom: '1px solid var(--border-subtle)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
           <h2 style={{ fontSize: '1.25rem' }}>Messages</h2>
           <button

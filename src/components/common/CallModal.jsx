@@ -11,10 +11,13 @@ export const CallModal = () => {
     <div
       style={{
         position: 'fixed',
-        top: '24px',
-        right: '24px',
+        top: 'clamp(12px, 2vw, 24px)',
+        left: 'clamp(12px, 2vw, auto)',
+        right: 'clamp(12px, 2vw, 24px)',
         zIndex: 200,
-        width: '340px',
+        maxWidth: '360px',
+        width: 'auto',
+        margin: '0 auto',
       }}
       className="animate-fade-in"
     >
@@ -23,7 +26,7 @@ export const CallModal = () => {
         style={{
           border: '1px solid rgba(99, 102, 241, 0.4)',
           boxShadow: '0 12px 36px rgba(0, 0, 0, 0.8), 0 0 20px var(--primary-glow)',
-          padding: '20px',
+          padding: '16px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
